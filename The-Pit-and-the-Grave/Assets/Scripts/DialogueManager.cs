@@ -7,14 +7,20 @@ using Ink.Runtime;
 
 public class DialogueManager : MonoBehaviour
 {
+    public Sprite surgery, surgerygood, surgerymiddle, surgerybad;
+    public Sprite kindergarden0, kindergarden1, kindergarden2, kindergarden3;
+    public Sprite bedroom, bedroommirror0, bedroommirror1, bedroommirror2, bedroomend, fog;
+
     public TextAsset inkFile;
     public GameObject textBox;
     public GameObject customButton;
     public GameObject optionPanel;
     public bool isTalking = false;
 
+    public bool isWriting = false;
+    public Image BG;
+
     static Story story;
-    TextMeshProUGUI nametag;
     TextMeshProUGUI message;
     List<string> tags;
     static Choice choiceSelected;
@@ -23,33 +29,30 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         story = new Story(inkFile.text);
-        nametag = textBox.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        message = textBox.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        message = textBox.transform.GetComponent<TextMeshProUGUI>();
         tags = new List<string>();
         choiceSelected = null;
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && isWriting == false)
         {
             //Is there more to the story?
             if(story.canContinue)
             {
-                nametag.text = "Gozde";
                 AdvanceDialogue();
 
-                //Are there any choices?
-                if (story.currentChoices.Count != 0)
-                {
-                    StartCoroutine(ShowChoices());
-                }
+
             }
             else
             {
                 FinishDialogue();
             }
+
         }
+        //Are there any choices?
+
     }
 
     // Finished the Story (Dialogue)
@@ -70,18 +73,26 @@ public class DialogueManager : MonoBehaviour
     // Type out the sentence letter by letter and make character idle if they were talking
     IEnumerator TypeSentence(string sentence)
     {
+        isWriting = true;
+        WaitForSeconds wait = new WaitForSeconds(0.05f);
         message.text = "";
         foreach(char letter in sentence.ToCharArray())
         {
+            //SoundEffectManager.Instance.PlayButtonSound();
+            if (letter.ToString() != "")
+            {
+                SoundEffectManager.Instance.PlayButtonSound();
+            }
             message.text += letter;
-            yield return null;
+            yield return wait;
         }
-        CharacterScript tempSpeaker = GameObject.FindObjectOfType<CharacterScript>();
-        if(tempSpeaker.isTalking)
-        {
-            SetAnimation("idle");
-        }
+
         yield return null;
+        if (story.currentChoices.Count != 0)
+        {
+            StartCoroutine(ShowChoices());
+        }
+        isWriting = false;
     }
 
     // Create then show the choices on the screen until one got selected
@@ -94,9 +105,13 @@ public class DialogueManager : MonoBehaviour
         {
             GameObject temp = Instantiate(customButton, optionPanel.transform);
             temp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = _choices[i].text;
-            temp.AddComponent<Selectable>();
-            temp.GetComponent<Selectable>().element = _choices[i];
-            temp.GetComponent<Button>().onClick.AddListener(() => { temp.GetComponent<Selectable>().Decide(); });
+            if (_choices[i].text != "")
+            {
+                temp.AddComponent<Selectable>();
+                temp.GetComponent<Selectable>().element = _choices[i];
+                temp.GetComponent<Button>().onClick.AddListener(() => { temp.GetComponent<Selectable>().Decide(); });
+            }
+
         }
 
         optionPanel.SetActive(true);
@@ -144,15 +159,92 @@ public class DialogueManager : MonoBehaviour
                 case "color":
                     SetTextColor(param);
                     break;
-                case "name":
-                    SetName(param);
+                case "backround":
+                    SetBackround(param);
+                    break;
+                case "music":
+                    SetMusic(param);
                     break;
             }
         }
     }
-    void SetName(string __name)
+
+    void SetBackround(string _backround)
     {
-        __name = nametag.text;
+        
+        switch (_backround)
+        {
+            case "normalquestion":
+                BG.color = Color.white;
+                break;
+            case "black":
+                BG.color = Color.black;
+                break;
+            case "therapist":
+                BG.color = Color.green;
+                break;
+            case "surgery":
+                BG.sprite = surgery;
+                break;
+            case "surgerygood":
+                BG.sprite = surgerygood;
+                break;
+            case "surgerymiddle":
+                BG.sprite = surgerymiddle;
+                break;
+            case "surgerybad":
+                BG.sprite = surgerybad;
+                break;
+            case "kindergarden0":
+                BG.sprite = kindergarden0;
+                break;
+            case "kindergarden1":
+                BG.sprite = kindergarden1;
+                break;
+            case "kindergarden2":
+                BG.sprite = kindergarden2;
+                break;
+            case "kindergarden3":
+                BG.sprite = kindergarden3;
+                break;
+            case "bedroom":
+                BG.sprite = bedroom;
+                break;
+            case "bedroommirror0":
+                BG.sprite = bedroommirror0;
+                break;
+            case "bedroommirror1":
+                BG.sprite = bedroommirror1;
+                break;
+            case "bedroommirror2":
+                BG.sprite = bedroommirror2;
+                break;
+            case "bedroomend":
+                BG.sprite = bedroomend;
+                break;
+            case "fog":
+                BG.sprite = fog;
+                break;
+            default:
+                Debug.Log($"{_backround} is not available as a bg");
+                break;
+        }
+    }
+    void SetMusic(string _situaitonn)
+    {
+
+        switch (_situaitonn)
+        {
+            case "on":
+                MusicManager.Instance.ChangeSituation(_situaitonn);
+                break;
+            case "off":
+                MusicManager.Instance.ChangeSituation(_situaitonn);
+                break;
+            default:
+                Debug.Log($"{_situaitonn} is not available as a bg");
+                break;
+        }
     }
     void SetAnimation(string _name)
     {
@@ -174,6 +266,9 @@ public class DialogueManager : MonoBehaviour
                 break;
             case "white":
                 message.color = Color.white;
+                break;
+            case "black":
+                message.color = Color.black;
                 break;
             default:
                 Debug.Log($"{_color} is not available as a text color");

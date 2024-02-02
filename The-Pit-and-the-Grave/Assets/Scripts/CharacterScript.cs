@@ -20,12 +20,11 @@ public class CharacterScript : MonoBehaviour
             case "idle":
                 anim.SetTrigger("toIdle");
                 break;
-            case "talk":
-                isTalking = true;
-                anim.SetTrigger("toTalk");
+            case "bloodyhand":
+                anim.SetTrigger("tobloodyhand");
                 break;
-            case "think":
-                anim.SetTrigger("toThink");
+            case "SystemReboot":
+                anim.SetTrigger("toSystemReboot");
                 break;
         }
     }
