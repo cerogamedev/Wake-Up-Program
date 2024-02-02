@@ -10,8 +10,11 @@ public class AudioController : MonoBehaviour
     private AudioSource sesKaynagi;
     public GameObject canva_;
 
+    public GameObject infoText;
+
     void Start()
     {
+        infoText.SetActive(false);
         sesKaynagi = this.GetComponent<AudioSource>();
         sesKaynagi.clip = ilkSes;
         sesKaynagi.Play();
@@ -34,6 +37,7 @@ public class AudioController : MonoBehaviour
     }
     public void StartTheGame()
     {
+        infoText.SetActive(true);
         sesKaynagi.loop = false;
         sesKaynagi.clip = startGameSound;
         sesKaynagi.Play();

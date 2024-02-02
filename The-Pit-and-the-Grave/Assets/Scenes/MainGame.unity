@@ -491,13 +491,16 @@ MonoBehaviour:
   bedroommirror2: {fileID: 21300000, guid: 90e3d3f648c2fc247916e531986b2ff2, type: 3}
   bedroomend: {fileID: 21300000, guid: 71667833cbe0c564eb77849365b27256, type: 3}
   fog: {fileID: 21300000, guid: 14578d685ed69254ebbb69f1a048eac7, type: 3}
-  inkFile: {fileID: 4900000, guid: d992b5b12faea7440a7d8a69d3eb1ec3, type: 3}
+  therapist: {fileID: 21300000, guid: d3346d0d4e785594388e5a964837a574, type: 3}
+  inkFile: {fileID: 4900000, guid: ee02be8a3e4599b46a5d4159ef99f3a0, type: 3}
   textBox: {fileID: 1850650841}
   customButton: {fileID: 4636069138587758146, guid: 4c8f72a4edd95a84bad2b33b0e99b554, type: 3}
   optionPanel: {fileID: 901689544}
   isTalking: 0
   isWriting: 0
   BG: {fileID: 1059988389}
+  waitingTime: 0
+  finisDialogue: 0
 --- !u!4 &706670690
 Transform:
   m_ObjectHideFlags: 0
@@ -1254,7 +1257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.30588236}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

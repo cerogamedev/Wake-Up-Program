@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Ink.Runtime;
+using UnityEngine.SceneManagement;
 
 public class DialogueManager : MonoBehaviour
 {
     public Sprite surgery, surgerygood, surgerymiddle, surgerybad;
     public Sprite kindergarden0, kindergarden1, kindergarden2, kindergarden3;
     public Sprite bedroom, bedroommirror0, bedroommirror1, bedroommirror2, bedroomend, fog;
-
+    public Sprite therapist;
     public TextAsset inkFile;
     public GameObject textBox;
     public GameObject customButton;
@@ -24,6 +25,9 @@ public class DialogueManager : MonoBehaviour
     TextMeshProUGUI message;
     List<string> tags;
     static Choice choiceSelected;
+
+    public float waitingTime;
+    public bool finisDialogue = false;
 
     // Start is called before the first frame update
     void Start()
@@ -39,10 +43,10 @@ public class DialogueManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && isWriting == false)
         {
             //Is there more to the story?
-            if(story.canContinue)
+            if(story.canContinue )
             {
                 AdvanceDialogue();
-
+ 
 
             }
             else
@@ -51,8 +55,10 @@ public class DialogueManager : MonoBehaviour
             }
 
         }
-        //Are there any choices?
-
+        if (Input.GetKeyDown(KeyCode.F) && isWriting == true)
+        {
+            finisDialogue = true;
+        }
     }
 
     // Finished the Story (Dialogue)
@@ -62,8 +68,9 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Advance through the story 
-    void AdvanceDialogue()
+    public void AdvanceDialogue()
     {
+        isWriting = true;
         string currentSentence = story.Continue();
         ParseTags();
         StopAllCoroutines();
@@ -73,8 +80,9 @@ public class DialogueManager : MonoBehaviour
     // Type out the sentence letter by letter and make character idle if they were talking
     IEnumerator TypeSentence(string sentence)
     {
+        waitingTime = 0.05f;
         isWriting = true;
-        WaitForSeconds wait = new WaitForSeconds(0.05f);
+        WaitForSeconds wait = new WaitForSeconds(waitingTime);
         message.text = "";
         foreach(char letter in sentence.ToCharArray())
         {
@@ -84,15 +92,22 @@ public class DialogueManager : MonoBehaviour
                 SoundEffectManager.Instance.PlayButtonSound();
             }
             message.text += letter;
+            if (finisDialogue == true)
+            {
+                textBox.GetComponent<TextMeshProUGUI>().text = sentence;
+                isWriting = false;
+                finisDialogue = false;
+                break;
+            }
             yield return wait;
         }
-
+        isWriting = false;
         yield return null;
+        //Are there any choices?
         if (story.currentChoices.Count != 0)
         {
             StartCoroutine(ShowChoices());
         }
-        isWriting = false;
     }
 
     // Create then show the choices on the screen until one got selected
@@ -117,8 +132,8 @@ public class DialogueManager : MonoBehaviour
         optionPanel.SetActive(true);
 
         yield return new WaitUntil(() => { return choiceSelected != null; });
-
         AdvanceFromDecision();
+
     }
 
     // Tells the story which branch to go to
@@ -165,6 +180,9 @@ public class DialogueManager : MonoBehaviour
                 case "music":
                     SetMusic(param);
                     break;
+                case "end":
+                    SceneManager.LoadScene("StartScreen");
+                    break;
             }
         }
     }
@@ -181,7 +199,7 @@ public class DialogueManager : MonoBehaviour
                 BG.color = Color.black;
                 break;
             case "therapist":
-                BG.color = Color.green;
+                BG.sprite = therapist;
                 break;
             case "surgery":
                 BG.sprite = surgery;
